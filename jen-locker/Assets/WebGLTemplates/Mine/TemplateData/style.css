@@ -90,9 +90,9 @@ body {
     position: relative;
 }
 
-.unity-mobile #unity-footer {
+/* .unity-mobile #unity-footer {
     display: none;
-}
+} */
 
 #unity-webgl-logo {
     float: left;
