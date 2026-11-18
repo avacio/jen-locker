@@ -37,6 +37,7 @@
       var fullscreenButton = document.querySelector("#unity-fullscreen-button");
       var warningBanner = document.querySelector("#unity-warning");
       var spotifyWidget = document.querySelector("#spotify-playlist");
+      var tweet = document.querySelector("#tweet");
 
       // Shows a temporary message banner/ribbon for a few seconds, or
       // a permanent error message on top of the canvas if type=='error'.
@@ -101,6 +102,7 @@
         container.className = "unity-mobile";
         canvas.className = "unity-mobile";
         spotifyWidget.className = "mobile";
+        tweet.className = "mobile";
 
         // To lower canvas resolution on mobile devices to gain some
         // performance, uncomment the following line:
