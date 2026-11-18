@@ -1,0 +1,60 @@
+
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements"
+         xsi:noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd"
+         editor-extension-mode="False">
+
+    <ui:VisualElement name="Root" class="root">
+
+        <!-- ===================== PIN PANEL ===================== -->
+        <ui:VisualElement name="PinPanel" class="panel pin-panel">
+
+            <ui:Label name="Title" text="Enter PIN" class="title-label"/>
+
+            <!-- PIN display (dots / dashes) -->
+            <ui:Label name="PinDisplay" text="– – – –" class="pin-display"/>
+
+            <!-- Error message -->
+            <ui:Label name="ErrorText" text="Incorrect PIN. Try again." class="error-text hidden"/>
+
+            <!-- Number pad -->
+            <ui:VisualElement name="Numpad" class="numpad">
+
+                <!-- Row 1 -->
+                <ui:VisualElement class="numpad-row">
+                    <ui:Button name="Btn1" text="1" class="numpad-btn"/>
+                    <ui:Button name="Btn2" text="2" class="numpad-btn"/>
+                    <ui:Button name="Btn3" text="3" class="numpad-btn"/>
+                </ui:VisualElement>
+
+                <!-- Row 2 -->
+                <ui:VisualElement class="numpad-row">
+                    <ui:Button name="Btn4" text="4" class="numpad-btn"/>
+                    <ui:Button name="Btn5" text="5" class="numpad-btn"/>
+                    <ui:Button name="Btn6" text="6" class="numpad-btn"/>
+                </ui:VisualElement>
+
+                <!-- Row 3 -->
+                <ui:VisualElement class="numpad-row">
+                    <ui:Button name="Btn7" text="7" class="numpad-btn"/>
+                    <ui:Button name="Btn8" text="8" class="numpad-btn"/>
+                    <ui:Button name="Btn9" text="9" class="numpad-btn"/>
+                </ui:VisualElement>
+
+                <!-- Row 4 -->
+                <ui:VisualElement class="numpad-row">
+                    <ui:VisualElement class="numpad-btn-spacer"/>
+                    <ui:Button name="Btn0" text="0" class="numpad-btn"/>
+                    <ui:Button name="BtnBackspace" text="⌫" class="numpad-btn backspace-btn"/>
+                </ui:VisualElement>
+
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- ===================== MAIN CONTENT ===================== -->
+        <ui:VisualElement name="MainContent" class="panel main-content hidden">
+            <ui:Label name="WelcomeLabel" text="Welcome! 🎉" class="welcome-label"/>
+            <ui:Label name="SubLabel" text="PIN accepted. Access granted." class="sub-label"/>
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>
