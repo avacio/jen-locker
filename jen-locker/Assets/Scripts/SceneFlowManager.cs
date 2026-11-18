@@ -1,5 +1,8 @@
 using UnityEngine;
 using UnityEngine.Serialization;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class SceneFlowManager : MonoBehaviour
 {
@@ -98,13 +101,11 @@ public class SceneFlowManager : MonoBehaviour
         bool inputThisFrame = false;
         Vector2 screenPos   = Vector2.zero;
 
-#if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WEBGL
         if (Input.GetMouseButtonDown(0))
         {
             inputThisFrame = true;
             screenPos = Input.mousePosition;
         }
-#endif
 
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
@@ -179,12 +180,57 @@ public class SceneFlowManager : MonoBehaviour
         return false;
     }
 
+    // ── Editor-only snap helpers ───────────────────────────────────
+
+    /// <summary>
+    /// Resolves the camera reference the same way Awake() does,
+    /// safe to call in Edit Mode where Camera.main may not exist.
+    /// </summary>
+    private Camera ResolveCamera()
+    {
+        if (targetCamera != null) return targetCamera;
+#if UNITY_EDITOR
+        // In Edit Mode Camera.main is often null; search the scene instead.
+        return FindFirstObjectByType<Camera>();
+#else
+        return Camera.main;
+#endif
+    }
+
+    /// <summary>Snaps transforms immediately without lerping. Safe to call in Edit Mode.</summary>
+    private void SnapToState(bool zoomedIn)
+    {
+        Transform camTarget = zoomedIn ? cameraZoomedPosition : cameraDefaultPosition;
+        Quaternion targetRot = zoomedIn
+            ? Quaternion.Euler(targetLocalEulerAngles)
+            : Quaternion.Euler(startLocalEulerAngles);
+
+        if (rotationTarget != null)
+        {
+#if UNITY_EDITOR
+            Undo.RecordObject(rotationTarget, zoomedIn ? "Trigger Zoom In" : "Reset To Default");
+#endif
+            rotationTarget.localRotation = targetRot;
+        }
+
+        Camera cam = ResolveCamera();
+        if (cam != null && camTarget != null)
+        {
+#if UNITY_EDITOR
+            Undo.RecordObject(cam.transform, zoomedIn ? "Trigger Zoom In" : "Reset To Default");
+#endif
+            cam.transform.SetPositionAndRotation(camTarget.position, camTarget.rotation);
+        }
+    }
+
     // ── Public API (optional use from other scripts / UI buttons) ──
 
     /// <summary>Programmatically reset to the default state.</summary>
+    [ContextMenu("Reset To Default")]
     public void ResetToDefault()
     {
-        _isZoomedIn     = false;
+        _isZoomedIn                = false;
+        _defaultRotation           = Quaternion.Euler(startLocalEulerAngles);
         _targetLockerLocalRotation = _defaultRotation;
 
         if (cameraDefaultPosition != null)
@@ -192,12 +238,17 @@ public class SceneFlowManager : MonoBehaviour
             _targetCameraPos = cameraDefaultPosition.position;
             _targetCameraRot = cameraDefaultPosition.rotation;
         }
+
+        // Snap immediately when called outside of Play Mode
+        if (!Application.isPlaying)
+            SnapToState(false);
     }
 
     /// <summary>Programmatically trigger the zoomed-in state.</summary>
+    [ContextMenu("Trigger Zoom In")]
     public void TriggerZoomIn()
     {
-        _isZoomedIn     = true;
+        _isZoomedIn                = true;
         _targetLockerLocalRotation = Quaternion.Euler(targetLocalEulerAngles);
 
         if (cameraZoomedPosition != null)
@@ -205,5 +256,9 @@ public class SceneFlowManager : MonoBehaviour
             _targetCameraPos = cameraZoomedPosition.position;
             _targetCameraRot = cameraZoomedPosition.rotation;
         }
+
+        // Snap immediately when called outside of Play Mode
+        if (!Application.isPlaying)
+            SnapToState(true);
     }
 }
